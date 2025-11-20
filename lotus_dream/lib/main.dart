@@ -1,72 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-
-import 'state/app_state.dart';
-import 'services/api_service.dart';
-import 'screens/home/home_screen.dart';
-import 'l10n/app_localizations.dart';
+import 'screens/home_screen.dart';
+import 'core/utils/localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Force portrait mode (recommended for lucky draw apps)
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  // Production-ready error screen (no red error UI)
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-    return Material(
-      child: Center(
-        child: Text(
-          "Something went wrong!",
-          style: TextStyle(color: Colors.red, fontSize: 16),
-        ),
-      ),
-    );
-  };
-
-  // Backend API service instance
-  final api = ApiService(
-    baseUrl: "https://your-backend.com/api",
-  );
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) =>
-              AppState(api: api)..loadInitialData(), // preload data
-        ),
-      ],
-      child: const LotusDreamApp(),
-    ),
-  );
+  // Load default locale (can later use shared prefs / device locale)
+  final localization = Localization('en');
+  await localization.load();
+  runApp(MyApp());
 }
 
-class LotusDreamApp extends StatelessWidget {
-  const LotusDreamApp({super.key});
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
+  final ThemeData theme = ThemeData(primarySwatch: Colors.purple);
 
   @override
   Widget build(BuildContext context) {
-    final app = Provider.of<AppState>(context);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      // Localization
-      locale: app.locale,
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-        DefaultMaterialLocalizations.delegate,
-        DefaultCupertinoLocalizations.delegate,
-      ],
-
-      // Home
+      title: 'Lotus Dream Lucky Draw',
+      theme: theme,
       home: const HomeScreen(),
     );
   }
