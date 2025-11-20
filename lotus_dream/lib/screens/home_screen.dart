@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../core/utils/localization.dart';
+import '../widgets/layouts/responsive_scaffold.dart';
+import '../widgets/cards/draw_card.dart';
+import '../widgets/loading/loading_widget.dart';
 import '../core/models/draw_model.dart';
+import '../core/utils/localization.dart';
 import '../services/firebase_service.dart';
 import 'draw_screen.dart';
-import '../widgets/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,9 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = Localization('en'); // Replace with dynamic locale later
-    return Scaffold(
-      appBar: AppBar(title: Text(loc.t('home_title'))),
+    final loc = Localization('en'); // TODO: Replace with dynamic locale
+
+    return ResponsiveScaffold(
+      title: loc.t('home_title'),
       body: StreamBuilder<List<Draw>>(
         stream: _drawStream,
         builder: (context, snapshot) {
@@ -38,16 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           final draws = snapshot.data ?? [];
           if (draws.isEmpty) {
-            return const Center(child: Text('No draws available'));
+            return Center(child: Text(loc.t('no_draws')));
           }
           return ListView.builder(
             itemCount: draws.length,
             itemBuilder: (context, index) {
               final draw = draws[index];
-              return ListTile(
-                title: Text(draw.name),
-                subtitle: Text('${loc.t('participants')}: ${draw.participants.length}'),
-                trailing: const Icon(Icons.arrow_forward),
+              return DrawCard(
+                draw: draw,
                 onTap: () {
                   Navigator.push(
                     context,
