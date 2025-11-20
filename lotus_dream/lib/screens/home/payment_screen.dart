@@ -19,22 +19,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final appState = context.watch<AppState>();
-    final total = _entries * appState.drawConfig.entryFee;
+
+    // Draw entry fee (configurable from backend)
+    final entryFee = appState.drawConfig.entryFee;
+    final totalAmount = _entries * entryFee;
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.translate('payment_gateway'))),
+      appBar: AppBar(
+        title: Text(t.translate('payment_gateway')),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// ENTRY FEE
             Text(
-              'Entry fee: ₹${appState.drawConfig.entryFee.toStringAsFixed(0)}',
+              '${t.translate("entries")}: $_entries',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+
+            /// ENTRY SLIDER
             Row(
               children: [
-                Text('${t.translate('entries')}: $_entries'),
+                Text(t.translate('entries')),
                 Expanded(
                   child: Slider(
                     min: 1,
@@ -46,18 +55,33 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         setState(() => _entries = value.toInt()),
                   ),
                 ),
+                Text('x ₹${entryFee.toStringAsFixed(0)}'),
               ],
             ),
-            Text('Total payable ₹${total.toStringAsFixed(2)}'),
+
+            /// TOTAL
+            const SizedBox(height: 12),
+            Text(
+              'Total: ₹${totalAmount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
             const SizedBox(height: 24),
+
+            /// PAYMENT METHODS
             Text(
               t.translate('payment_methods'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
+
             ...List.generate(appState.paymentOptions.length, (index) {
               final option = appState.paymentOptions[index];
               final isSelected = _selectedMethod == index;
+
               return Card(
                 color: isSelected
                     ? Theme.of(context).colorScheme.primaryContainer
@@ -79,21 +103,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               );
             }),
+
             const Spacer(),
-            ElevatedButton.icon(
-              onPressed: () {
-                context.read<AppState>().recordPayment(total);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Payment scheduled via ${appState.paymentOptions[_selectedMethod].name}',
+
+            /// PAY NOW BUTTON
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  appState.recordPayment(totalAmount);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '${appState.paymentOptions[_selectedMethod].name} → ₹$totalAmount payment requested',
+                      ),
                     ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.lock),
-              label: Text(t.translate('payment_gateway')),
-            ),
+                  );
+                },
+                icon: const Icon(Icons.lock),
+                label: Text(t.translate('cta_pay_now')),
+              ),
+            )
           ],
         ),
       ),
