@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fortune_wheel/fortune_wheel.dart';
 import 'package:provider/provider.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lotus_dream/core/models/draw_model.dart';
-import 'package:lotus_dream/core/models/user_model.dart';
 
 void main() {
   group('Draw Model', () {

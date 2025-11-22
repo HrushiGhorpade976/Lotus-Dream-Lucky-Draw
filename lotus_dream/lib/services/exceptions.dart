@@ -10,10 +10,10 @@ String toString() => 'ApiException(status: $statusCode, message: $message)';
 
 
 class NetworkException extends ApiException {
-NetworkException(String message) : super(message);
+NetworkException(super.message);
 }
 
 
 class TimeoutExceptionApi extends ApiException {
-TimeoutExceptionApi(String message) : super(message);
+TimeoutExceptionApi(super.message);
 }

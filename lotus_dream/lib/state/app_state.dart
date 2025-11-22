@@ -97,7 +97,7 @@ class AppState extends ChangeNotifier {
     // Mock login: accept any non-empty phone
     if (phone.trim().isEmpty) return false;
     _isAuthenticated = true;
-    _currentUser = User(id: 'mock-${phone}', phone: phone);
+    _currentUser = User(id: 'mock-$phone', phone: phone);
     notifyListeners();
     return true;
   }

@@ -1,5 +1,5 @@
 ElevatedButton.icon(
-  onPressed: () async {
+  onPressed = () async {
     final option = appState.paymentOptions[_selectedMethod];
 
     try {
@@ -18,6 +18,6 @@ ElevatedButton.icon(
       );
     }
   },
-  icon: const Icon(Icons.lock),
-  label: Text(t.translate('payment_gateway')),
+  icon = const Icon(Icons.lock),
+  label = Text(t.translate('payment_gateway')),
 ),
